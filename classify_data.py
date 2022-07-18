@@ -21,7 +21,7 @@ def create_rds_connection():
         cursor.execute(sql)
         cursor.connection.commit()
     except Exception as e:
-        print(e)
+        pass
     sql = """Use rdsDB"""
     cursor.execute(sql)
     try:
@@ -36,11 +36,14 @@ def create_rds_connection():
     return cursor, db
 
 
-@app.route('/<file_name>', methods=['POST'])
+@app.route('/<file_name>', methods=['GET'])
 def home(file_name):
-    s3.download_file(
-        Bucket="swisscom-assignment-bucket", Key=file_name, Filename="data/{}".format(file_name)
-    )
+    try:
+        s3.download_file(
+            Bucket="swisscom-assignment-bucket", Key=file_name, Filename="data/{}".format(file_name)
+        )
+    except:
+        return jsonify({"HTTP_STATUS":404, "message":"Unable to get file from S3 bucket"})
     if not os.listdir("data/"):
         os.mkdir("data/")
     with open(r"data/{}".format(file_name), 'r') as o:
@@ -63,15 +66,21 @@ def home(file_name):
         message = "{} contains Sensitive Data".format(file_name)
     else:
         message = "{} contains Insensitive Data".format(file_name)
-    cursor, db = create_rds_connection()
-    query = """Insert into view_message(message) values("{}")""".format(message)
-    cursor.execute(query)
-    db.commit()
-    cursor.close()
-    sns.publish(PhoneNumber="+917354642555", Message=message,
-                      MessageAttributes={'AWS.SNS.SMS.SMSType': {'DataType': 'String', 'StringValue': 'Transactional'}})
+    try:
+        cursor, db = create_rds_connection()
+        query = """Insert into view_message(message) values("{}")""".format(message)
+        cursor.execute(query)
+        db.commit()
+        cursor.close()
+    except:
+        return jsonify({"status":404, "message":"Unable to save data in RDS"})
+    try:
+        sns.publish(PhoneNumber="+917354642555", Message=message,
+                    MessageAttributes={'AWS.SNS.SMS.SMSType': {'DataType': 'String', 'StringValue': 'Transactional'}})
+    except:
+        return jsonify({"status":404, "message":"Unable to send message"})
 
-    return jsonify({"data": message})
+    return jsonify({"status":200,"message": message})
 
 @app.route('/data', methods=['GET'])
 def get_table_data():
