@@ -1,4 +1,4 @@
 .idea/
 ve/*
 __pycache__/
-data/*
+app/data/*

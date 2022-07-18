@@ -6,7 +6,7 @@ RUN apt-get install python3-pip -y
 RUN apt-get install gunicorn3 -y
 
 COPY requirement.txt requirement.txt
-COPY flaskapp /opt/
+COPY app /opt/
 
 RUN pip3 install -r requirement.txt
 WORKDIR /opt/

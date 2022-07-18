@@ -38,14 +38,15 @@ def create_rds_connection():
 
 @app.route('/<file_name>', methods=['GET'])
 def home(file_name):
+    if not os.path.isdir("data/"):
+        os.mkdir("data/")
     try:
         s3.download_file(
             Bucket="swisscom-assignment-bucket", Key=file_name, Filename="data/{}".format(file_name)
         )
-    except:
-        return jsonify({"HTTP_STATUS":404, "message":"Unable to get file from S3 bucket"})
-    if not os.listdir("data/"):
-        os.mkdir("data/")
+    except Exception as e:
+        return jsonify({"HTTP_STATUS":404, "message":"Unable to get file from S3 bucket {}".format(e)})
+
     with open(r"data/{}".format(file_name), 'r') as o:
         value = o.readlines()
     count = 0
