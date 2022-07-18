@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify
-from constants import NAMES, SWISS_CITY
+from .constants import NAMES, SWISS_CITY
 from dateutil.parser import parse
 import boto3
 import pymysql
@@ -94,4 +94,4 @@ def get_table_data():
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="3.108.44.47", port=80, debug=True)

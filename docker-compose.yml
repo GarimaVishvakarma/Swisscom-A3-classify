@@ -3,7 +3,7 @@ services:
   flaskapp:
     build: .
     ports:
-      - "80:80"
+      - "8000:8000"
     network_mode: host
 
 
