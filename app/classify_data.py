@@ -1,7 +1,7 @@
 import os
 
 from flask import Flask, jsonify
-from .constants import NAMES, SWISS_CITY
+from `constants import NAMES, SWISS_CITY
 from dateutil.parser import parse
 import boto3
 import pymysql
