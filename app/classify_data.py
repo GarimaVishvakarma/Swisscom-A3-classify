@@ -74,12 +74,12 @@ def home(file_name):
         db.commit()
         cursor.close()
     except:
-        return jsonify({"status":404, "message":"Unable to save data in RDS"})
+        return jsonify({"status":404, "error":"Unable to save data in RDS", "message": message})
     try:
         sns.publish(PhoneNumber="+917354642555", Message=message,
                     MessageAttributes={'AWS.SNS.SMS.SMSType': {'DataType': 'String', 'StringValue': 'Transactional'}})
     except:
-        return jsonify({"status":404, "message":"Unable to send message"})
+        return jsonify({"status":404, "message":"Unable to send message", "message": message})
 
     return jsonify({"status":200,"message": message})
 
@@ -94,4 +94,4 @@ def get_table_data():
 
 
 if __name__ == '__main__':
-    app.run(host="3.108.44.47", port=80, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
